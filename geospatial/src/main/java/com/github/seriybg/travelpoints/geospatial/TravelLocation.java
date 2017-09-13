@@ -1,6 +1,9 @@
 package com.github.seriybg.travelpoints.geospatial;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJson;
@@ -11,7 +14,7 @@ import java.util.List;
 
 @Document
 @AllArgsConstructor
-@EqualsAndHashCode()
+@EqualsAndHashCode
 @ToString
 public class TravelLocation implements GeoJson<List<Double>> {
 

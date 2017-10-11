@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.GenericContainer;
@@ -35,6 +35,9 @@ public class GeospatialServiceTest {
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println(mongodb.getContainerIpAddress());
+            System.out.println(mongodb.getMappedPort(27017));
             TestPropertyValues.of(
                     "spring.data.mongodb.host=" + mongodb.getContainerIpAddress(),
                     "spring.data.mongodb.port=" + mongodb.getMappedPort(27017))
@@ -48,32 +51,35 @@ public class GeospatialServiceTest {
     @Test
     public void shouldCreateNewTravelLocation() throws Exception {
         final TravelLocation entity =
-                new TravelLocation("123", "name", "description", new Point(1L, 2L));
+                new TravelLocation("name", "description", new GeoJsonPoint(1L, 2L));
         final Mono<TravelLocation> savedLocation = service.save(entity);
 
-        StepVerifier.create(savedLocation)
-                .expectNext(new TravelLocation("123", "name", "description", new Point(1L, 2L)))
+        final TravelLocation saved = savedLocation.block();
+        StepVerifier.create(service.findById(saved.getId()))
+                .expectNext(new TravelLocation("name", "description", new GeoJsonPoint(1L, 2L)))
                 .verifyComplete();
     }
 
     @Test
     public void shouldFindNearestLocations() throws Exception {
         final TravelLocation location =
-                new TravelLocation("123", "location", "description", new Point(1L, 1L));
+                new TravelLocation("location", "description", new GeoJsonPoint(1L, 1L));
         List<TravelLocation> locations = new ArrayList<>();
         locations.add(location);
-        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new Point(1L, 2L)));
-        locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new Point(2L, 2L)));
-        locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new Point(1024L, 1024L)));
+        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)));
+        locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(2L, 2L)));
+        locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new GeoJsonPoint(1024L, 1024L)));
 
-        locations.forEach(service::save);
+        locations.stream().map(service::save).forEach(Mono::block);
 
-        final Flux<TravelLocation> nearestLocations = service.findByLocationNear(location, new Distance(5, Metrics.KILOMETERS));
+        final Flux<TravelLocation> nearestLocations = service.findByPointNear(location.getPoint(), new Distance(5, Metrics.KILOMETERS));
 
+        service.findAll().subscribe(System.out::println);
+        Thread.sleep(10000l);
         StepVerifier.create(nearestLocations)
                 .expectNext(
-                        new TravelLocation("nearLocation1", "nearLocation1", "description", new Point(1L, 2L)),
-                        new TravelLocation("nearLocation2", "nearLocation2", "description", new Point(2L, 2L)))
+                        new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)),
+                        new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(2L, 2L)))
                 .verifyComplete();
     }
 }

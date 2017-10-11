@@ -1,22 +1,16 @@
 package com.github.seriybg.travelpoints.geospatial;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJson;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Arrays;
-import java.util.List;
-
-@Document
+@Document(collection = "travelLocation")
 @AllArgsConstructor
+@RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class TravelLocation implements GeoJson<List<Double>> {
+public class TravelLocation {
 
     private static final String TYPE = "Feature";
 
@@ -25,20 +19,11 @@ public class TravelLocation implements GeoJson<List<Double>> {
     private String id;
 
     @Getter
-    private String name;
+    private final String name;
 
     @Getter
-    private String description;
+    private final String description;
 
-    private Point location;
-
-    @Override
-    public String getType() {
-        return TYPE;
-    }
-
-    @Override
-    public List<Double> getCoordinates() {
-        return Arrays.asList(location.getX(), location.getY());
-    }
+    @Getter
+    private final GeoJsonPoint point;
 }

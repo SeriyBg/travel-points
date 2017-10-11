@@ -68,7 +68,7 @@ public class GeospatialServiceTest {
         locations.add(location);
         locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)));
         locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(2L, 2L)));
-        locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new GeoJsonPoint(1024L, 1024L)));
+        locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new GeoJsonPoint(124L, 24L)));
 
         locations.stream().map(service::save).forEach(Mono::block);
 

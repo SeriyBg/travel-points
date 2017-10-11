@@ -12,8 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 public class TravelLocation {
 
-    private static final String TYPE = "Feature";
-
     @Id
     @Getter
     private String id;

@@ -3,13 +3,18 @@ package com.github.seriybg.travelpoints.geospatial;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "travelLocation")
 @AllArgsConstructor
 @RequiredArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
+@CompoundIndexes({@CompoundIndex(def = "{'point':'2dsphere'}")})
 public class TravelLocation {
 
     @Id
@@ -17,11 +22,15 @@ public class TravelLocation {
     private String id;
 
     @Getter
-    private final String name;
+    @NonNull
+    private String name;
 
     @Getter
-    private final String description;
+    @NonNull
+    private String description;
 
     @Getter
-    private final GeoJsonPoint point;
+    @Indexed
+    @NonNull
+    private GeoJsonPoint point;
 }

@@ -66,9 +66,7 @@ public class GeospatialServiceTest {
 
         locations.stream().map(service::save).forEach(Mono::block);
 
-        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1L, 2L), new Distance(5, Metrics.KILOMETERS));
-
-        Thread.sleep(10000l);
+        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1L, 2L), new Distance(50, Metrics.KILOMETERS));
         StepVerifier.create(nearestLocations)
                 .expectNext(
                         new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)),

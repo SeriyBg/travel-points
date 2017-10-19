@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "id")
 @ToString
 @CompoundIndexes({@CompoundIndex(def = "{'point':'2dsphere'}")})
 public class TravelLocation {

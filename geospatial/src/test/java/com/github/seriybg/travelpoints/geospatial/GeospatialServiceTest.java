@@ -48,25 +48,25 @@ public class GeospatialServiceTest {
     @Test
     public void shouldCreateNewTravelLocation() throws Exception {
         final TravelLocation entity =
-                new TravelLocation("name", "description", new GeoJsonPoint(1L, 2L));
+                new TravelLocation("name", "description", new GeoJsonPoint(10L, 20L));
         final Mono<TravelLocation> savedLocation = service.save(entity);
 
         final TravelLocation saved = savedLocation.block();
         StepVerifier.create(service.findById(saved.getId()))
-                .expectNext(new TravelLocation("name", "description", new GeoJsonPoint(1L, 2L)))
+                .expectNext(new TravelLocation("name", "description", new GeoJsonPoint(10L, 20L)))
                 .verifyComplete();
     }
 
     @Test
     public void shouldFindNearestLocations() throws Exception {
         List<TravelLocation> locations = new ArrayList<>();
-        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)));
+        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1.000000, 2L)));
         locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(1.000001, 2L)));
         locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new GeoJsonPoint(124L, 24L)));
 
         locations.stream().map(service::save).forEach(Mono::block);
 
-        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1L, 2L), new Distance(50, Metrics.KILOMETERS));
+        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1.000000, 2L), new Distance(5000, Metrics.KILOMETERS));
         StepVerifier.create(nearestLocations)
                 .expectNext(
                         new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)),

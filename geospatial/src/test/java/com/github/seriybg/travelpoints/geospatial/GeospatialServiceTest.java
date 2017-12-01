@@ -60,17 +60,18 @@ public class GeospatialServiceTest {
     @Test
     public void shouldFindNearestLocations() throws Exception {
         List<TravelLocation> locations = new ArrayList<>();
-        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1.000000, 2L)));
-        locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(1.000001, 2L)));
+        locations.add(new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1.000000000, 2.0000000)));
+        locations.add(new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(1.000000001, 2.0000000)));
         locations.add(new TravelLocation("farAwayLocation", "farAwayLocation", "description", new GeoJsonPoint(124L, 24L)));
 
         locations.stream().map(service::save).forEach(Mono::block);
 
-        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1.000000, 2L), new Distance(5000, Metrics.KILOMETERS));
+        final Flux<TravelLocation> nearestLocations = service.findByPointNear(new GeoJsonPoint(1.000000000, 2.0000000), new Distance(5, Metrics.KILOMETERS));
         StepVerifier.create(nearestLocations)
                 .expectNext(
                         new TravelLocation("nearLocation1", "nearLocation1", "description", new GeoJsonPoint(1L, 2L)),
-                        new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(1.000001, 2L)))
+                        new TravelLocation("nearLocation2", "nearLocation2", "description", new GeoJsonPoint(1.000000001, 2.0000000)))
                 .verifyComplete();
     }
+
 }
